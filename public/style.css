@@ -1,0 +1,342 @@
+/* style.css */
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+    color: #343a40;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.order-tracking-container {
+    background-color: #ffffff;
+    padding: 45px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    width: 95%;
+    max-width: 1000px;
+    margin: 35px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.order-tracking-container:hover {
+    transform: scale(1.03);
+}
+
+.order-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.order-header h1 {
+    color: #e12c7b;
+    margin-bottom: 20px;
+    font-size: 3em;
+}
+
+.order-header p {
+    color: #6c757d;
+    font-size: 1.25em;
+    line-height: 1.7;
+}
+
+.tracking-form {
+    margin-bottom: 60px;
+}
+
+.form-group {
+    margin-bottom: 30px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 15px;
+    color: #495057;
+    font-weight: 500;
+    font-size: 1.2em;
+}
+
+.form-group input[type="text"] {
+    width: 100%;
+    padding: 18px;
+    border: 2px solid #ced4da;
+    border-radius: 10px;
+    box-sizing: border-box;
+    font-size: 1.15em;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group input[type="text"]:focus {
+    border-color: #e12c7b;
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(225, 44, 123, .25);
+}
+
+.track-button {
+    background-color: #e12c7b;
+    color: white;
+    padding: 18px 40px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.3em;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+}
+
+.track-button:hover {
+    background-color: #d11a69;
+    transform: translateY(-3px);
+    box-shadow: 0 7px 15px rgba(0, 0, 0, 0.2);
+}
+
+.track-button:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.tracking-status {
+    padding-top: 20px;
+}
+
+.tracking-status h2 {
+    color: #e12c7b;
+    margin-bottom: 35px;
+    font-size: 2.5em;
+    text-align: center;
+}
+
+.status-steps-container {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    margin-bottom: 50px;
+    align-items: center;
+}
+
+.status-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background-color: #e12c7b;
+    transform: translateY(-50%);
+    z-index: -1;
+}
+
+.status-line.active {
+    background-color: #e12c7b;
+    height: 3px;
+    width: 0;
+    transition: width 0.5s ease-out;
+}
+
+.status-step {
+    flex: 1;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.status-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: #fff;
+    border: 3px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    color: #777;
+    font-size: 2.2em;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    position: relative;
+}
+
+.status-icon::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #fff;
+    border: 2px solid #ddd;
+    z-index: 1;
+}
+
+.status-step.active .status-icon {
+    border-color: #e12c7b;
+    color: #e12c7b;
+    background-color: #ffeef5;
+}
+
+.status-step.active .status-icon::after {
+    background-color: #e12c7b;
+    border-color: #e12c7b;
+}
+
+.status-step.completed .status-icon {
+    border-color: #17406d;
+    color: #17406d;
+    background-color: #e0e8f0;
+}
+
+.status-step.completed .status-icon::after {
+    background-color: #17406d;
+    border-color: #17406d;
+}
+
+.status-step.completed .status-label {
+    color: #17406d;
+    font-weight: 600;
+}
+
+.status-step.pending .status-icon {
+    border-color: #ddd;
+    color: #777;
+    background-color: #fff;
+    opacity: 0.5;
+}
+
+.status-step.pending .status-icon::after {
+    background-color: #fff;
+    border-color: #ddd;
+}
+
+.status-step.active .status-label {
+    color: #e12c7b;
+    font-weight: 600;
+}
+
+.status-step.pending .status-label {
+    color: #777;
+}
+
+.status-label {
+    color: #555;
+    font-size: 1.1em;
+}
+
+.order-details {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.08);
+    margin-bottom: 30px;
+    padding: 30px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, auto));
+    gap: 15px;
+}
+
+.detail-item {
+    display: contents;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: #495057;
+    text-align: left;
+    padding-right: 10px;
+}
+
+.detail-value {
+    color: #343a40;
+    word-break: break-word;
+}
+
+.detailed-timeline {
+    padding: 25px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.08);
+}
+
+.detailed-timeline h3 {
+    color: #e12c7b;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.6em;
+    text-align: center;
+}
+
+.detailed-timeline ul {
+    list-style: none;
+    padding: 0;
+}
+
+.detailed-timeline li {
+    padding: 15px 0;
+    border-bottom: 1px dashed #ced4da;
+    position: relative;
+    padding-left: 35px;
+}
+
+.detailed-timeline li:last-child {
+    border-bottom: none;
+}
+
+.detailed-timeline li strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #495057;
+    font-weight: 600;
+}
+
+.timeline-detail-icon {
+    position: absolute;
+    left: 0;
+    top: 15px;
+    color: #e12c7b;
+    font-size: 1em;
+}
+
+/* Responsive Styles */
+
+@media (max-width: 1024px) {
+    .order-tracking-container {
+        padding: 30px;
+        margin: 20px;
+        width: 90%;
+        max-width: 90%;
+    }
+}
+
+@media (max-width: 480px) {
+    .order-header h1 {
+        font-size: 2em;
+    }
+    .order-header p {
+        font-size: 1em;
+    }
+    .form-group label {
+        font-size: 1em;
+    }
+    .track-button {
+        font-size: 1em;
+        padding: 12px 20px;
+    }
+    .order-tracking-container {
+        padding: 20px;
+        margin: 10px;
+        width: 95%;
+        max-width: 95%;
+    }
+    /* Mobile adjustments for order status icons */
+    .status-icon {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 20px;
+        font-size: 1.5rem;
+    }
+    .status-label {
+        font-size: 0.9em;
+    }
+}   

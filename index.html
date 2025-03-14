@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Tracking</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #343a40;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .order-tracking-container {
+            background-color: #ffffff;
+            padding: 45px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 95%;
+            max-width: 1000px;
+            margin: 35px;
+            /* transition: transform 0.3s ease-in-out; */
+        }
+
+        .order-tracking-container:hover {
+            transform: scale(1.03);
+        }
+
+        .order-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .order-header h1 {
+            color: #e12c7b;
+            margin-bottom: 20px;
+            font-size: 3em;
+        }
+
+        .order-header p {
+            color: #6c757d;
+            font-size: 1.25em;
+            line-height: 1.7;
+        }
+
+        .tracking-form {
+            margin-bottom: 60px;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 15px;
+            color: #495057;
+            font-weight: 500;
+            font-size: 1.2em;
+        }
+
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 18px;
+            border: 2px solid #ced4da;
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-size: 1.15em;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-group input[type="text"]:focus {
+            border-color: #e12c7b;
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(225, 44, 123, .25);
+        }
+
+        .track-button {
+            background-color: #e12c7b;
+            color: white;
+            padding: 18px 40px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.3em;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .track-button:hover {
+            background-color: #d11a69;
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .track-button:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .tracking-status {
+            padding-top: 20px;
+        }
+
+        .tracking-status h2 {
+            color: #e12c7b;
+            margin-bottom: 35px;
+            font-size: 2.5em;
+            text-align: center;
+        }
+
+        .current-status {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #17406d;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.08);
+        }
+
+        .status-steps-container {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 100px; /* Increased to accommodate labels below */
+            padding-top: 20px; /* Added to ensure line is below icons */
+        }
+
+        .status-line-container {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 3px;
+            z-index: 0;
+        }
+
+        .status-line-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background-color: #ddd;
+        }
+
+        .status-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background-color: #e12c7b;
+            width: 0;
+            transition: width 1s ease-out;
+        }
+
+        .status-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .status-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: #fff;
+            border: 3px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: #777;
+            font-size: 2.2em;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .status-step.active .status-icon {
+            border-color: #e12c7b;
+            color: #e12c7b;
+            background-color: #ffeef5;
+            transform: scale(1.1);
+        }
+
+        .status-step.completed .status-icon {
+            border-color: #17406d;
+            color: #17406d;
+            background-color: #e0e8f0;
+        }
+
+        .status-step.pending .status-icon {
+            border-color: #ddd;
+            color: #777;
+            opacity: 0.7;
+        }
+
+        .status-label {
+            position: absolute;
+            top: 90px; /* Position labels below icons */
+            color: #555;
+            font-size: 1.1em;
+            font-weight: 500;
+            text-align: center;
+            width: 100px; /* Fixed width for labels */
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .status-step.active .status-label {
+            color: #e12c7b;
+            font-weight: 700;
+        }
+
+        .status-step.completed .status-label {
+            color: #17406d;
+            font-weight: 600;
+        }
+
+        .status-step.pending .status-label {
+            color: #777;
+        }
+
+        .order-details {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+            padding: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, auto));
+            gap: 15px;
+        }
+
+        .detail-item {
+            display: contents;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #495057;
+            text-align: left;
+            padding-right: 10px;
+        }
+
+        .detail-value {
+            color: #343a40;
+            word-break: break-word;
+        }
+
+        .detailed-timeline {
+            padding: 25px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.08);
+        }
+
+        .detailed-timeline h3 {
+            color: #e12c7b;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.6em;
+            text-align: center;
+        }
+
+        .detailed-timeline ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .detailed-timeline li {
+            padding: 15px 0;
+            border-bottom: 1px dashed #ced4da;
+            position: relative;
+            padding-left: 35px;
+        }
+
+        .detailed-timeline li:last-child {
+            border-bottom: none;
+        }
+
+        .detailed-timeline li strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #495057;
+            font-weight: 600;
+        }
+
+        .timeline-detail-icon {
+            position: absolute;
+            left: 0;
+            top: 15px;
+            color: #e12c7b;
+            font-size: 1em;
+        }
+
+        .loader {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .loader-spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #e12c7b;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .copy-link {
+            display: inline-flex;
+            align-items: center;
+            margin-top: 15px;
+            padding: 8px 16px;
+            background-color: #f8f9fa;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .copy-link:hover {
+            background-color: #e9ecef;
+        }
+
+        .copy-link i {
+            margin-right: 8px;
+        }
+
+        .copy-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background-color: #28a745;
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .copy-notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1024px) {
+            .order-tracking-container {
+                padding: 30px;
+                margin: 20px;
+                width: 90%;
+                max-width: 90%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .status-steps-container {
+                margin-bottom: 120px;
+            }
+            .status-label {
+                font-size: 0.9em;
+                width: 80px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .order-header h1 {
+                font-size: 2em;
+            }
+            .order-header p {
+                font-size: 1em;
+            }
+            .form-group label {
+                font-size: 1em;
+            }
+            .track-button {
+                font-size: 1em;
+                padding: 12px 20px;
+            }
+            .order-tracking-container {
+                padding: 20px;
+                margin: 10px;
+                width: 95%;
+                max-width: 95%;
+            }
+            .status-icon {
+                width: 35px;
+                height: 35px;
+                font-size: 1.2em;
+            }
+            .status-steps-container {
+                margin-bottom: 140px;
+            }
+            .status-label {
+                font-size: 0.8em;
+                width: 60px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <div class="order-tracking-container">
+        <header class="order-header">
+            <h1>Track Your Order</h1>
+            <p>Enter your order number to track your order status.</p>
+        </header>
+
+        <section class="tracking-form">
+            <form id="trackingForm">
+                <div class="form-group">
+                    <label for="orderNumber">Tracking Number or Shopify Order Name</label>
+                    <input type="text" id="orderNumber" name="orderNumber" placeholder="Enter tracking number or Shopify order name" required>
+                </div>
+                <button type="submit" class="track-button">Track Order</button>
+            </form>
+        </section>
+
+        <section class="tracking-status" id="trackingStatus" style="display:none;">
+            <h2>Order Status</h2>
+            <div class="current-status" id="currentStatusDisplay"></div>
+            <div class="status-steps-container">
+                <div class="status-line-container">
+                    <div class="status-line-bg"></div>
+                    <div class="status-line" id="statusLine"></div>
+                </div>
+                <div class="status-step" data-step="1">
+                    <div class="status-icon"><i class="fas fa-shopping-cart"></i></div>
+                    <div class="status-label">Ordered</div>
+                </div>
+                <div class="status-step" data-step="2">
+                    <div class="status-icon"><i class="fas fa-clipboard-list"></i></div>
+                    <div class="status-label">Ready to Ship</div>
+                </div>
+                <div class="status-step" data-step="3">
+                    <div class="status-icon"><i class="fas fa-box-open"></i></div>
+                    <div class="status-label">Picked Up</div>
+                </div>
+                <div class="status-step" data-step="4">
+                    <div class="status-icon"><i class="fas fa-shipping-fast"></i></div>
+                    <div class="status-label">In Transit</div>
+                </div>
+                <div class="status-step" data-step="5">
+                    <div class="status-icon"><i class="fas fa-route"></i></div>
+                    <div class="status-label">Out for Delivery</div>
+                </div>
+                <div class="status-step" data-step="6">
+                    <div class="status-icon"><i class="fas fa-home"></i></div>
+                    <div class="status-label">Delivered</div>
+                </div>
+            </div>
+            
+            <div class="order-details" id="orderDetails">
+                <div class="detail-item">
+                    <span class="detail-label">Tracking Number:</span>
+                    <span id="trackingNumberDisplay" class="detail-value"></span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Warehouse:</span>
+                    <span id="warehouseDisplay" class="detail-value"></span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Customer Order Number:</span>
+                    <span id="customerOrderNumberDisplay" class="detail-value"></span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Delivery Date:</span>
+                    <span id="deliveryDateDisplay" class="detail-value"></span>
+                </div>
+            </div>
+
+            <div class="detailed-timeline" id="detailedTimeline">
+                <h3>Detailed Timeline</h3>
+                <div class="loader" id="timelineLoader" style="display: none;">
+                    <div class="loader-spinner"></div>
+                </div>
+                <ul id="timelineStepsDetailed">
+                </ul>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Client-side logging utility
+        const logger = {
+            // Log levels
+            levels: {
+                debug: 0,
+                info: 1,
+                warn: 2,
+                error: 3
+            },
+            
+            // Current log level (only logs at this level or higher will be sent to server)
+            currentLevel: 1, // Default to info
+            
+            // Whether to also log to console (for development)
+            consoleOutput: false,
+            
+            // Send log to server
+            async sendToServer(type, message, data = null) {
+                try {
+                    // Only send logs at or above the current level
+                    if (this.levels[type] < this.currentLevel) return;
+                    
+                    // Send log to server
+                    await fetch('/api/log', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            type,
+                            message,
+                            data
+                        })
+                    });
+                    
+                    // Also log to console if enabled
+                    if (this.consoleOutput) {
+                        if (type === 'error') {
+                            console.error(message, data || '');
+                        } else if (type === 'warn') {
+                            console.warn(message, data || '');
+                        } else {
+                            console.log(`[${type.toUpperCase()}] ${message}`, data || '');
+                        }
+                    }
+                } catch (e) {
+                    // If sending to server fails, log to console as fallback
+                    console.error('Failed to send log to server:', e);
+                    console.error(`[${type.toUpperCase()}] ${message}`, data || '');
+                }
+            },
+            
+            // Convenience methods for different log levels
+            debug(message, data = null) {
+                this.sendToServer('debug', message, data);
+            },
+            
+            info(message, data = null) {
+                this.sendToServer('info', message, data);
+            },
+            
+            warn(message, data = null) {
+                this.sendToServer('warn', message, data);
+            },
+            
+            error(message, data = null) {
+                this.sendToServer('error', message, data);
+            }
+        };
+        
+        // Function to store the session cookie with expiration time (24 hours)
+        function storeSessionCookie(sessionCookie) {
+            if (!sessionCookie) return false;
+            
+            try {
+                // Calculate expiration time (24 hours from now)
+                const expirationTime = new Date().getTime() + (24 * 60 * 60 * 1000);
+                
+                // Store both the cookie and its expiration time
+                const cookieData = {
+                    cookie: sessionCookie,
+                    expires: expirationTime
+                };
+                
+                localStorage.setItem('wmsSessionData', JSON.stringify(cookieData));
+                logger.info('Session cookie stored with expiration', { expiration: new Date(expirationTime).toLocaleString() });
+                return true;
+            } catch (error) {
+                logger.error('Error storing session cookie', { error: error.message });
+                return false;
+            }
+        }
+        
+        // Function to retrieve a valid session cookie if one exists
+        function getStoredSessionCookie() {
+            try {
+                const cookieDataStr = localStorage.getItem('wmsSessionData');
+                if (!cookieDataStr) return null;
+                
+                const cookieData = JSON.parse(cookieDataStr);
+                const currentTime = new Date().getTime();
+                
+                // Check if the cookie has expired
+                if (cookieData.expires && cookieData.expires > currentTime) {
+                    const hoursRemaining = Math.round((cookieData.expires - currentTime) / (60 * 60 * 1000));
+                    logger.info('Using stored session cookie', { expiresIn: `${hoursRemaining} hours` });
+                    return cookieData.cookie;
+                } else {
+                    // Cookie expired, remove it
+                    logger.info('Stored session cookie expired, removing');
+                    localStorage.removeItem('wmsSessionData');
+                    return null;
+                }
+            } catch (error) {
+                logger.error('Error retrieving session cookie', { error: error.message });
+                localStorage.removeItem('wmsSessionData');
+                return null;
+            }
+        }
+        
+        // Function to login to iStoreISend WMS API via proxy server
+        async function loginToWMS() {
+            try {
+                // First check if we have a valid stored session cookie
+                const storedCookie = getStoredSessionCookie();
+                if (storedCookie) {
+                    logger.info('Using existing session cookie');
+                    return storedCookie;
+                }
+                
+                logger.info('No valid session cookie found, logging in...');
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Login failed: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                logger.info('Login response received', { success: data.success });
+                
+                if (!data.success) {
+                    throw new Error(data.message || 'Login failed');
+                }
+                
+                if (!data.sessionCookie) {
+                    throw new Error('No session cookie returned from server');
+                }
+                
+                // Store the new session cookie
+                storeSessionCookie(data.sessionCookie);
+                
+                return data.sessionCookie;
+            } catch (error) {
+                logger.error('Login error', { message: error.message });
+                throw error;
+            }
+        }
+        
+        // Function to query order by Shopify order name via proxy server
+        async function queryOrderByShopifyName(orderName, sessionCookie) {
+            try {
+                logger.info('Querying order by Shopify name', { orderName });
+                logger.debug('Session cookie details', { 
+                    type: typeof sessionCookie,
+                    isArray: Array.isArray(sessionCookie),
+                    length: Array.isArray(sessionCookie) ? sessionCookie.length : 'N/A'
+                });
+                
+                const response = await fetch('/api/query-order', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        orderName,
+                        sessionCookie
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    logger.error('Query order error response', { status: response.status, response: errorText });
+                    throw new Error(`Order query failed: ${response.status} - ${errorText}`);
+                }
+                
+                const data = await response.json();
+                logger.info('Query order response received', { success: data.success });
+                
+                if (!data.success) {
+                    throw new Error(data.message || 'Failed to query order');
+                }
+                
+                if (!data.trackingCode) {
+                    throw new Error('No tracking code returned from server');
+                }
+                
+                return data.trackingCode;
+            } catch (error) {
+                logger.error('Order query error', { message: error.message });
+                throw error;
+            }
+        }
+        
+        // Function to determine if input is a tracking number or Shopify order name
+        function isTrackingNumber(input) {
+            // Tracking numbers are typically alphanumeric and may contain hyphens
+            // Shopify order names often start with specific prefixes like TMR-O
+            const isShopifyOrder = input.toUpperCase().startsWith('TMR-O') || input.toUpperCase().startsWith('TMR-');
+            logger.debug('Checking input type', { input, isShopifyOrder });
+            return !isShopifyOrder;
+        }
+        
+        // Function to track an order
+        async function trackOrder(input) {
+            if (!input || input.trim() === '') {
+                alert('Please enter a tracking number or Shopify order name.');
+                return;
+            }
+            
+            const trackingStatusSection = document.getElementById('trackingStatus');
+            if (!trackingStatusSection) {
+                logger.error('DOM element not found', { element: 'trackingStatus' });
+                return;
+            }
+            const currentStatusDisplay = document.getElementById('currentStatusDisplay');
+            const trackingNumberDisplay = document.getElementById('trackingNumberDisplay');
+            const warehouseDisplay = document.getElementById('warehouseDisplay');
+            const customerOrderNumberDisplay = document.getElementById('customerOrderNumberDisplay');
+            const deliveryDateDisplay = document.getElementById('deliveryDateDisplay');
+            const statusSteps = document.querySelectorAll('.status-step');
+            const statusLine = document.getElementById('statusLine');
+            const timelineStepsDetailed = document.getElementById('timelineStepsDetailed');
+            const timelineLoader = document.getElementById('timelineLoader');
+            const shareContainer = document.getElementById('shareContainer');
+            
+            // Show loading state
+            trackingStatusSection.style.display = 'block';
+            currentStatusDisplay.textContent = 'Loading...';
+            timelineLoader.style.display = 'flex';
+            timelineStepsDetailed.innerHTML = '';
+            
+            // Reset step statuses and line
+            statusSteps.forEach(step => {
+                step.classList.remove('active', 'completed', 'pending');
+            });
+            statusLine.style.width = '0%';
+            
+            let orderNumber = input.trim();
+            
+            try {
+                // If input looks like a Shopify order name, try to get the tracking number
+                if (!isTrackingNumber(orderNumber)) {
+                    logger.info('Processing as Shopify order name', { orderName: orderNumber });
+                    
+                    // Format Shopify order name if needed
+                    orderNumber = formatShopifyOrderName(orderNumber);
+                    logger.info('Using formatted order name', { orderName: orderNumber });
+                    
+                    // Login to WMS API via proxy server
+                    logger.info('Attempting to login to WMS API');
+                    const sessionCookie = await loginToWMS();
+                    logger.info('Login successful, session cookie received');
+                    
+                    // Query order by Shopify order name via proxy server
+                    logger.info('Querying order with name', { orderName: orderNumber });
+                    orderNumber = await queryOrderByShopifyName(orderNumber, sessionCookie);
+                    logger.info('Received tracking number', { trackingNumber: orderNumber });
+                }
+                
+                // Update URL with the original user input without reloading page
+                const url = new URL(window.location);
+                url.searchParams.set('tracking', input.trim());
+                window.history.pushState({}, '', url);
+                
+                // Fetch tracking data from S3
+                const trackingUrl = `https://s3.ap-southeast-1.amazonaws.com/tracking.istoreisend-wms.com/${orderNumber}.xml`;
+                const response = await fetch(trackingUrl);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                
+                const xmlString = await response.text();
+                timelineLoader.style.display = 'none';
+                
+                if (!xmlString || xmlString.trim() === '') {
+                    throw new Error('Empty response received');
+                }
+                
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+                
+                if (xmlDoc.querySelector('parsererror')) {
+                    throw new Error('Invalid XML format');
+                }
+
+                const wmsTrackingView = xmlDoc.querySelector('WmsTrackingView');
+                if (!wmsTrackingView) {
+                    throw new Error('Tracking information not found in XML');
+                }
+
+                // Set tracking details
+                trackingNumberDisplay.textContent = wmsTrackingView.querySelector('trackingCode')?.textContent || orderNumber;
+                warehouseDisplay.textContent = wmsTrackingView.querySelector('warehouseNo')?.textContent || 'N/A';
+                customerOrderNumberDisplay.textContent = wmsTrackingView.querySelector('custOrderNo')?.textContent || 'N/A';
+                
+                const deliveryStatus = wmsTrackingView.querySelector('deliveryStatus')?.textContent || 'Pending';
+                currentStatusDisplay.textContent = `Current Status: ${deliveryStatus}`;
+
+                const deliveryStatusDateText = wmsTrackingView.querySelector('deliveryStatusDate')?.textContent;
+                console.log('Raw delivery status date:', deliveryStatusDateText);
+                
+                // Special handling for delivery date format
+                let parsedDeliveryDate = null;
+                if (deliveryStatusDateText) {
+                    // Try to directly extract components if it's in the format DD/MM/YYYY HH:MM:SS
+                    const dateMatch = deliveryStatusDateText.match(/(\d{2})\/(\d{2})\/(\d{4})\s(\d{2}):(\d{2}):(\d{2})/);
+                    if (dateMatch) {
+                        const [, day, month, year, hour, minute, second] = dateMatch;
+                        console.log(`Extracted delivery date components: day=${day}, month=${month}, year=${year}, hour=${hour}, minute=${minute}, second=${second}`);
+                        parsedDeliveryDate = new Date(year, month - 1, day, hour, minute, second);
+                    }
+                }
+                
+                // Function to safely parse dates in different formats
+                function parseDate(dateStr) {
+                    if (!dateStr) return null;
+                    
+                    // Log the date string for debugging
+                    console.log('Parsing date string:', dateStr);
+                    
+                    // Try different date formats
+                    // Format: DD/MM/YYYY HH:MM:SS
+                    if (/\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2}:\d{2}/.test(dateStr)) {
+                        const [datePart, timePart] = dateStr.split(' ');
+                        const [day, month, year] = datePart.split('/');
+                        const [hour, minute, second] = timePart.split(':');
+                        return new Date(year, month - 1, day, hour, minute, second);
+                    }
+                    
+                    // Format: YYYY-MM-DD
+                    if (/\d{4}-\d{2}-\d{2}/.test(dateStr)) {
+                        const [year, month, day] = dateStr.split('-');
+                        return new Date(year, month - 1, day);
+                    }
+                    
+                    // Format: DD/MM/YYYY (without time)
+                    if (/\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
+                        const [day, month, year] = dateStr.split('/');
+                        return new Date(year, month - 1, day);
+                    }
+                    
+                    // Format: YYYY/MM/DD
+                    if (/\d{4}\/\d{2}\/\d{2}/.test(dateStr)) {
+                        const [year, month, day] = dateStr.split('/');
+                        return new Date(year, month - 1, day);
+                    }
+                    
+                    // Try standard JS date parsing as fallback
+                    const date = new Date(dateStr);
+                    
+                    // If standard parsing fails, try to extract date components manually
+                    if (isNaN(date.getTime())) {
+                        console.log('Standard date parsing failed, trying manual extraction');
+                        
+                        // Try to extract date components from various formats
+                        const dateRegex = /(\d{1,4})[-\/](\d{1,2})[-\/](\d{1,4})/;
+                        const match = dateStr.match(dateRegex);
+                        
+                        if (match) {
+                            // Determine if year is first or last component based on value
+                            let year, month, day;
+                            if (parseInt(match[1]) > 1000) { // First component is year
+                                [, year, month, day] = match;
+                            } else { // Last component is year
+                                [, day, month, year] = match;
+                            }
+                            
+                            // Ensure year has 4 digits
+                            if (year.length === 2) {
+                                year = '20' + year; // Assume 20xx for 2-digit years
+                            }
+                            
+                            console.log(`Extracted components: year=${year}, month=${month}, day=${day}`);
+                            return new Date(year, month - 1, day);
+                        }
+                    }
+                    
+                    return isNaN(date.getTime()) ? null : date;
+                }
+                
+                // The date is already in ISO format, just parse and format it simply
+                let formattedDate = 'N/A';
+                
+                // Check if there's a timeline entry with a delivery status to use that date instead
+                const timelineEntries = wmsTrackingView.querySelectorAll('detailList WmsTrackingDetailView');
+                let deliveryTimelineEntry = null;
+                
+                // Look for a timeline entry that mentions 'Delivered'
+                for (const entry of timelineEntries) {
+                    const desc = entry.querySelector('detailDesc')?.textContent || '';
+                    if (desc.toLowerCase().includes('delivered')) {
+                        deliveryTimelineEntry = entry;
+                        break;
+                    }
+                }
+                
+                // If we found a delivery entry, use its date
+                if (deliveryTimelineEntry) {
+                    const timelineDate = deliveryTimelineEntry.querySelector('detailDate')?.textContent;
+                    console.log('Found delivery timeline entry with date:', timelineDate);
+                    
+                    // Parse the date in format DD/MM/YYYY HH:MM:SS
+                    const dateMatch = timelineDate.match(/(\d{2})\/(\d{2})\/(\d{4})\s(\d{2}):(\d{2}):(\d{2})/);
+                    if (dateMatch) {
+                        const [, day, month, year, hours, minutes] = dateMatch;
+                        formattedDate = `${parseInt(day)} ${new Date(year, month-1, day).toLocaleString('en-US', { month: 'long' })} ${year} at ${hours}:${minutes}`;
+                    } else {
+                        // Fallback to the standard date formatting if the regex doesn't match
+                        try {
+                            const date = new Date(timelineDate);
+                            if (!isNaN(date.getTime())) {
+                                const day = date.getDate();
+                                const month = date.toLocaleString('en-US', { month: 'long' });
+                                const year = date.getFullYear();
+                                const hours = date.getHours().toString().padStart(2, '0');
+                                const minutes = date.getMinutes().toString().padStart(2, '0');
+                                
+                                formattedDate = `${day} ${month} ${year} at ${hours}:${minutes}`;
+                            }
+                        } catch (e) {
+                            console.error('Error parsing timeline date:', e);
+                            formattedDate = timelineDate;
+                        }
+                    }
+                } else {
+                    // If no delivery entry found, use the original date
+                    try {
+                        if (deliveryStatusDateText) {
+                            const date = new Date(deliveryStatusDateText);
+                            
+                            if (!isNaN(date.getTime())) {
+                                // Format as '13 March 2025 at 12:05'
+                                const day = date.getDate();
+                                const month = date.toLocaleString('en-US', { month: 'long' });
+                                const year = date.getFullYear();
+                                const hours = date.getHours().toString().padStart(2, '0');
+                                const minutes = date.getMinutes().toString().padStart(2, '0');
+                                
+                                formattedDate = `${day} ${month} ${year} at ${hours}:${minutes}`;
+                            } else {
+                                // If parsing fails, just show the raw date
+                                formattedDate = deliveryStatusDateText;
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Error formatting original date:', e);
+                        formattedDate = deliveryStatusDateText || 'N/A';
+                    }
+                }
+                    
+                console.log('Formatted date:', formattedDate);
+                deliveryDateDisplay.textContent = formattedDate;
+
+                // Determine active step based on delivery status
+                let activeStep = 1; // Default to Ordered
+                const statusLower = deliveryStatus.toLowerCase();
+                
+                if (statusLower.includes('delivered')) {
+                    activeStep = 6; // Delivered
+                } else if (statusLower.includes('out for delivery')) {
+                    activeStep = 5; // Out for Delivery
+                } else if (statusLower.includes('transit') || 
+                           statusLower.includes('inbound') || 
+                           statusLower.includes('outbound')) {
+                    activeStep = 4; // In Transit
+                } else if (statusLower.includes('picked up')) {
+                    activeStep = 3; // Picked Up
+                } else if (statusLower.includes('ready to ship')) {
+                    activeStep = 2; // Ready to Ship
+                }
+
+                // Calculate progress percentage (from 0 to 100%)
+                const progressPercentage = ((activeStep - 1) / (statusSteps.length - 1)) * 100;
+                
+                // Update status line width with animation
+                setTimeout(() => {
+                    statusLine.style.width = `${progressPercentage}%`;
+                }, 100);
+
+                // Update step statuses
+                for (let i = 0; i < statusSteps.length; i++) {
+                    const step = statusSteps[i];
+                    const stepNumber = parseInt(step.getAttribute('data-step'));
+                    
+                    if (stepNumber < activeStep) {
+                        step.classList.add('completed');
+                    } else if (stepNumber === activeStep) {
+                        step.classList.add('active');
+                    } else {
+                        step.classList.add('pending');
+                    }
+                }
+
+                // Build detailed timeline
+                const detailList = wmsTrackingView.querySelectorAll('detailList WmsTrackingDetailView');
+                
+                if (detailList.length === 0) {
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `<i class="fas fa-info-circle timeline-detail-icon"></i> <strong>No detailed tracking information available yet.</strong>`;
+                    timelineStepsDetailed.appendChild(listItem);
+                } else {
+                    // Sort details by date (newest first)
+                    const sortedDetails = Array.from(detailList).sort((a, b) => {
+                        const dateA = parseDate(a.querySelector('detailDate').textContent);
+                        const dateB = parseDate(b.querySelector('detailDate').textContent);
+                        
+                        // Handle null dates (invalid dates)
+                        if (!dateA && !dateB) return 0;
+                        if (!dateA) return 1; // null dates go to the end
+                        if (!dateB) return -1;
+                        
+                        return dateB - dateA; // Descending order
+                    });
+                    
+                    sortedDetails.forEach(detail => {
+                        const detailDateRaw = detail.querySelector('detailDate').textContent;
+                        console.log('Timeline detail date raw:', detailDateRaw);
+                        
+                        // Format the date or use a fallback for invalid dates
+                        let formattedDetailDate = 'Date not available';
+                        
+                        try {
+                            if (detailDateRaw) {
+                                // First try to match the DD/MM/YYYY HH:MM:SS format directly
+                                const dateMatch = detailDateRaw.match(/(\d{2})\/(\d{2})\/(\d{4})\s(\d{2}):(\d{2}):(\d{2})/);
+                                if (dateMatch) {
+                                    // Extract components and format directly
+                                    const [, day, month, year, hours, minutes] = dateMatch;
+                                    const monthName = new Date(year, month-1, day).toLocaleString('en-US', { month: 'long' });
+                                    formattedDetailDate = `${parseInt(day)} ${monthName} ${year} at ${hours}:${minutes}`;
+                                } else {
+                                    // Try standard date parsing
+                                    const date = new Date(detailDateRaw);
+                                    
+                                    if (!isNaN(date.getTime())) {
+                                        // Format as '13 March 2025 at 12:05'
+                                        const day = date.getDate();
+                                        const month = date.toLocaleString('en-US', { month: 'long' });
+                                        const year = date.getFullYear();
+                                        const hours = date.getHours().toString().padStart(2, '0');
+                                        const minutes = date.getMinutes().toString().padStart(2, '0');
+                                        
+                                        formattedDetailDate = `${day} ${month} ${year} at ${hours}:${minutes}`;
+                                    } else {
+                                        // If parsing fails, just show the raw date
+                                        formattedDetailDate = detailDateRaw;
+                                    }
+                                }
+                            }
+                        } catch (e) {
+                            console.error('Error formatting timeline date:', e);
+                            formattedDetailDate = detailDateRaw || 'Date not available';
+                        }
+                        
+                        const detailDesc = detail.querySelector('detailDesc').textContent;
+                        console.log('Original detailDesc:', detailDesc);
+                        const descriptionWithoutStatusId = detailDesc.replace(/status id:\s*\d+,?/i, '').trim();
+                        console.log('Updated detailDesc:', descriptionWithoutStatusId);
+                        
+                        let iconClass = 'fas fa-info-circle'; // Default icon
+                        
+                        if (detailDesc.toLowerCase().includes('picked up')) {
+                            iconClass = 'fas fa-box-open';
+                        } else if (detailDesc.toLowerCase().includes('outbound') || 
+                                  detailDesc.toLowerCase().includes('transit') || 
+                                  detailDesc.toLowerCase().includes('inbound')) {
+                            iconClass = 'fas fa-shipping-fast';
+                        } else if (detailDesc.toLowerCase().includes('delivery')) {
+                            iconClass = 'fas fa-route';
+                        } else if (detailDesc.toLowerCase().includes('delivered')) {
+                            iconClass = 'fas fa-home';
+                        } else if (detailDesc.toLowerCase().includes('order')) {
+                            iconClass = 'fas fa-shopping-cart';
+                        }
+
+                        const listItem = document.createElement('li');
+                        listItem.innerHTML = `
+                            <i class="${iconClass} timeline-detail-icon"></i>
+                            <strong>${formattedDetailDate}</strong>
+                        ${descriptionWithoutStatusId}
+                        `;
+                        timelineStepsDetailed.appendChild(listItem);
+                    });
+                }
+            } catch (error) {
+                timelineLoader.style.display = 'none';
+                console.error('Error tracking order:', error);
+                currentStatusDisplay.textContent = 'Error: Could not retrieve tracking information';
+                currentStatusDisplay.style.color = '#e12c7b';
+                timelineStepsDetailed.innerHTML = `
+                    <li><i class="fas fa-exclamation-circle timeline-detail-icon"></i> 
+                    <strong>Error</strong>: ${error.message || 'Please check your input and try again.'}</li>
+                `;
+                if (shareContainer) {
+                    shareContainer.style.display = 'none';
+                }
+            }
+        }
+
+        // Form submit handler
+        document.getElementById('trackingForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const orderNumber = document.getElementById('orderNumber').value.trim();
+            await trackOrder(orderNumber);
+        });
+
+        // Copy tracking link handler
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     const copyTrackingLink = document.getElementById('copyTrackingLink');
+        //     if (copyTrackingLink) {
+        //         copyTrackingLink.addEventListener('click', function() {
+        //             const currentUrl = window.location.href;
+        //             navigator.clipboard.writeText(currentUrl).then(() => {
+        //                 const notification = document.getElementById('copyNotification');
+        //                 notification.classList.add('show');
+                        
+        //                 setTimeout(() => {
+        //                     notification.classList.remove('show');
+        //                 }, 3000);
+        //             }).catch(err => {
+        //                 console.error('Could not copy text: ', err);
+        //                 alert('Failed to copy the link. Please try again.');
+        //             });
+        //         });
+        //     } else {
+        //         console.error('copyTrackingLink element not found');
+        //     }
+        // });
+
+        // Helper function to format Shopify order names if needed
+        function formatShopifyOrderName(orderName) {
+            if (orderName && !orderName.toUpperCase().startsWith('TMR-O') && orderName.toUpperCase().startsWith('TMR-')) {
+                // If it starts with TMR- but not TMR-O, add the O
+                return orderName.replace(/^TMR-/i, 'TMR-O');
+            }
+            return orderName;
+        }
+        
+        // Check for URL parameters on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const trackingParam = urlParams.get('tracking');
+            
+            if (trackingParam) {
+                // Set the input field value to what was in the URL
+                document.getElementById('orderNumber').value = trackingParam;
+                
+                // Track the order using the parameter from the URL
+                await trackOrder(trackingParam);
+            }
+            
+            // Add copy link button functionality
+            const copyTrackingLink = document.getElementById('copyTrackingLink');
+            if (copyTrackingLink) {
+                copyTrackingLink.addEventListener('click', function() {
+                    const currentUrl = window.location.href;
+                    navigator.clipboard.writeText(currentUrl).then(() => {
+                        const notification = document.getElementById('copyNotification');
+                        notification.classList.add('show');
+                        
+                        setTimeout(() => {
+                            notification.classList.remove('show');
+                        }, 3000);
+                    }).catch(err => {
+                        console.error('Could not copy text: ', err);
+                        alert('Failed to copy the link. Please try again.');
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>
