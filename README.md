@@ -116,8 +116,8 @@ POST https://botwebapi.istoreisend-wms.com/IsisWMS-War/Json/Public/login/
 Content-Type: application/json
 
 {
-  "userNo": "BOT1545",
-  "userPassword": "24c82fd32c664e073a414f78d06976a3"
+  "userNo": "WMS username",
+  "userPassword": "WMS Password"
 }
 ```
 
