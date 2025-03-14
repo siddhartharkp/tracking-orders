@@ -112,7 +112,7 @@ You can test the backend independently by:
 ### 1. Login API
 
 ```
-POST https://botwebapi.istoreisend-wms.com/IsisWMS-War/Json/Public/login/
+POST {ENVIRONMENT_URL}/IsisWMS-War/Json/Public/login/
 Content-Type: application/json
 
 {
@@ -126,7 +126,7 @@ This endpoint authenticates with the WMS system and returns a session cookie tha
 ### 2. Order Query API
 
 ```
-POST https://botwebapi.istoreisend-wms.com/IsisWMS-War/Json/WhseOrder/doQueryOrderPage
+POST {ENVIRONMENT_URL}/IsisWMS-War/Json/WhseOrder/doQueryOrderPage
 Content-Type: application/json
 
 {
